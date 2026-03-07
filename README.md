@@ -1,20 +1,20 @@
 # lastmessage
 
-Pin your last message in Claude Code's status bar. Never lose track of what you asked while responses stream by.
+Claude Code'da son mesajinizi durum cubuguna sabitleyin. Yanitlar akarken ne sordugunuzu bir daha unutmayin.
 
 ![screenshot](screenshot.png)
 
-## What it does
+## Ne yapar?
 
-When you send a message in Claude Code, it gets pinned in the status bar area (orange text above the stats line). Each terminal session tracks its own pinned message independently - open 8 terminals and each one shows what you last asked in that specific session.
+Claude Code'da mesaj gonderdiginizde, mesajiniz durum cubugunda turuncu renkte sabitlenir (istatistik satirinin ustunde). Her terminal oturumu kendi mesajini bagimsiz olarak takip eder - 8 terminal acin, her birinde o terminale yazdiginiz son mesaj gorunur.
 
-## How it works
+## Nasil calisir?
 
-1. **`UserPromptSubmit` hook** captures your message when you press Enter
-2. Writes it to a session-specific file (`~/.claude/last-prompt-{pid}.txt`)
-3. **StatusLine** reads and displays it above the stats bar
+1. **`UserPromptSubmit` hook** Enter'a bastiginizda mesajinizi yakalar
+2. Oturuma ozel dosyaya yazar (`~/.claude/last-prompt-{pid}.txt`)
+3. **StatusLine** okuyup istatistiklerin ustunde gosterir
 
-## Install
+## Kurulum
 
 ```bash
 git clone https://github.com/dijitalbaslangic/lastmessage.git
@@ -22,19 +22,19 @@ cd lastmessage
 bash install.sh
 ```
 
-Then restart Claude Code.
+Ardindan Claude Code'u yeniden baslatin.
 
-## Uninstall
+## Kaldirma
 
 ```bash
 bash uninstall.sh
 ```
 
-## Manual setup
+## Manuel kurulum
 
-If you prefer to set it up manually:
+Kendiniz kurmak isterseniz:
 
-### 1. Copy the hook
+### 1. Hook'u kopyalayin
 
 ```bash
 mkdir -p ~/.claude/hooks
@@ -42,9 +42,9 @@ cp hooks/pin-last-message.sh ~/.claude/hooks/
 chmod +x ~/.claude/hooks/pin-last-message.sh
 ```
 
-### 2. Add hook to settings
+### 2. Hook'u ayarlara ekleyin
 
-Add this to your `~/.claude/settings.json` inside the `"hooks"` object:
+`~/.claude/settings.json` icindeki `"hooks"` objesine ekleyin:
 
 ```json
 "UserPromptSubmit": [
@@ -60,18 +60,18 @@ Add this to your `~/.claude/settings.json` inside the `"hooks"` object:
 ]
 ```
 
-### 3. StatusLine (optional)
+### 3. StatusLine (istege bagli)
 
-If you already have a statusline, add the patch from `statusline-patch.py` before your final `print()`.
+Zaten bir statusline'iniz varsa, `statusline-patch.py` icindeki kodu son `print()` satirindan once ekleyin.
 
-If you don't have a statusline, copy the full one:
+Statusline'iniz yoksa, hazir olani kopyalayin:
 
 ```bash
 cp statusline.sh ~/.claude/statusline.sh
 chmod +x ~/.claude/statusline.sh
 ```
 
-And add to `~/.claude/settings.json`:
+Ve `~/.claude/settings.json` dosyasina ekleyin:
 
 ```json
 "statusLine": {
@@ -81,12 +81,12 @@ And add to `~/.claude/settings.json`:
 }
 ```
 
-## Requirements
+## Gereksinimler
 
 - Claude Code CLI
 - Python 3
-- macOS (for rate limit fetching via Keychain; the pin feature works on any OS)
+- macOS (hiz limiti takibi icin Keychain gerekli; pin ozelligi tum isletim sistemlerinde calisir)
 
-## License
+## Lisans
 
 MIT
