@@ -2,7 +2,6 @@
 
 Claude Code'da son mesajinizi durum cubuguna sabitleyin. Yanitlar akarken ne sordugunuzu bir daha unutmayin.
 
-![screenshot](screenshot.png)
 
 ## Ne yapar?
 
@@ -27,8 +26,15 @@ Ardindan Claude Code'u yeniden baslatin.
 ## Kaldirma
 
 ```bash
+cd lastmessage
 bash uninstall.sh
 ```
+
+Bu komut sadece su islemleri yapar:
+- `~/.claude/hooks/pin-last-message.sh` dosyasini siler
+- `~/.claude/last-prompt-*.txt` gecici dosyalarini siler
+- `settings.json` icinden `UserPromptSubmit` hook'unu kaldirir
+- Statusline yedegi varsa geri yukler (`statusline.sh.bak`)
 
 ## Manuel kurulum
 
