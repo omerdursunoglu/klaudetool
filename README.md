@@ -62,18 +62,13 @@ Abonelik yenilenme suresi icin:
 - Bir sonraki yenilenme tarihine kalan gun hesaplanir
 - Ay sonu tasmalarini (ornegin 31. gun) otomatik yonetir
 
-**Otomatik uyum (auto-fit):**
-
-Terminal genisligi ne olursa olsun en fazla bilgiyi gosterir. 4 detay seviyesi vardir:
+Istatistik cubugu terminal genisligi ne olursa olsun her zaman tam formatta gosterilir:
 
 ```
-Tam:     Opus 4.6 | 11% | 5h 14% 1h21m | 7d 17% 5d12h | 2k/200k | $0.21 | 8d
-Orta:    Opus 4.6 | 11% | 5h 14% | 7d 17%
-Kompakt: Opus 4.6 5h:14% 7d:17% 11%
-Minimal: 5h:14% 7d:17% 11%
+Opus 4.6 | 11% | 5h 14% 1h21m | 7d 17% 5d12h | 2k/200k | $0.21 | 8d
 ```
 
-En detayli format denenir; sigmiyorsa bir alt seviyeye gecer. Terminal genisligi `stty`, `COLUMNS`, `os.get_terminal_size()` ve `tput cols` yontemleriyle sirayla denenerek tespit edilir.
+Sabitlenen mesaj ise terminal genisligine gore kirpilir.
 
 
 ## Kurulum

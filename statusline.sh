@@ -8,7 +8,6 @@ import os
 import time
 import subprocess
 import datetime
-import re
 
 HOME = os.path.expanduser("~")
 CACHE_FILE = os.path.join(HOME, ".claude", "ratelimit_cache.json")
@@ -233,19 +232,9 @@ def get_term_width():
 
 term_width = get_term_width()
 
-def strip_ansi(s):
-    return re.sub(r'\033\[[0-9;]*m', '', s)
-
 sep = f" {DIM}|{RESET} "
-sep_compact = " "
 
-# Claude Code reserves part of the terminal width for its own UI
-effective_width = max(term_width - 5, 25)
-
-# Auto-fit: build stats at different detail levels, pick the best fit
-stats_levels = []
-
-# Full: model, tokens, 5h+reset, 7d+reset, ctx%, cost, sub
+# Always show full stats
 _parts = [
     f"{CYAN}{model_short}{RESET}",
     f"{ctx_color}{used_pct}%{RESET}",
@@ -256,40 +245,11 @@ _parts = [
 ]
 if sub_text:
     _parts.append(sub_text)
-stats_levels.append(sep.join(_parts))
-
-# Medium: no reset times, no cost
-stats_levels.append(sep.join([
-    f"{CYAN}{model_short}{RESET}",
-    f"{ctx_color}{used_pct}%{RESET}",
-    f"5h {pct_5h}",
-    f"7d {pct_7d}",
-]))
-
-# Compact: space separator, no tokens
-stats_levels.append(sep_compact.join([
-    f"{CYAN}{model_short}{RESET}",
-    f"5h:{pct_5h}",
-    f"7d:{pct_7d}",
-    f"{ctx_color}{used_pct}%{RESET}",
-]))
-
-# Minimal: bare essentials
-stats_levels.append(sep_compact.join([
-    f"5h:{pct_5h}",
-    f"7d:{pct_7d}",
-    f"{ctx_color}{used_pct}%{RESET}",
-]))
-
-# Pick the most detailed format that fits
-stats = stats_levels[-1]
-for s in stats_levels:
-    if len(strip_ansi(s)) <= effective_width:
-        stats = s
-        break
+stats = sep.join(_parts)
 
 if last_prompt:
     PIN = "\033[38;2;255;180;50m"
+    effective_width = max(term_width - 5, 25)
     msg_max = effective_width - 2
     display = last_prompt if len(last_prompt) <= msg_max else last_prompt[:msg_max - 1] + "…"
     print(f"{PIN}{display}{RESET}\n{stats}")
