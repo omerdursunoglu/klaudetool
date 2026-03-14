@@ -127,6 +127,18 @@ cp -R KlaudeTool.app ~/Applications/
 open ~/Applications/KlaudeTool.app
 ```
 
+## Abonelik Yonetimi
+
+Abonelik yenilenme gununu ayarlamak, degistirmek veya kaldirmak icin:
+
+```bash
+bash subscription.sh set 16    # Yenilenme gununu 16 olarak ayarla
+bash subscription.sh status    # Mevcut durumu goster
+bash subscription.sh remove    # Abonelik takibini kaldir
+```
+
+Aboneligi durdurduktan sonra tekrar baslattinizda `bash subscription.sh set <gun>` ile yeni yenilenme gununuzu ayarlayabilirsiniz.
+
 ## Gereksinimler
 
 - Claude Code CLI

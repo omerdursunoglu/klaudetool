@@ -180,6 +180,34 @@ else
     echo "[=] Skipped (macOS only)"
 fi
 
+# Subscription renewal day
+echo ""
+echo "Subscription Setup"
+echo "------------------"
+SUB_FILE="$CLAUDE_DIR/subscription.json"
+if [ -f "$SUB_FILE" ]; then
+    current_day=$(python3 -c "import json; print(json.load(open('$SUB_FILE')).get('renewal_day', 'not set'))" 2>/dev/null)
+    echo "Current renewal day: $current_day"
+    read -p "Change renewal day? [y/N]: " change_sub
+    if [[ "$change_sub" =~ ^[Yy]$ ]]; then
+        read -p "Enter your subscription renewal day (1-31): " renewal_day
+        if [[ "$renewal_day" =~ ^[0-9]+$ ]] && [ "$renewal_day" -ge 1 ] && [ "$renewal_day" -le 31 ]; then
+            echo "{\"renewal_day\": $renewal_day}" > "$SUB_FILE"
+            echo "[+] Renewal day set to $renewal_day"
+        else
+            echo "[!] Invalid day, skipping"
+        fi
+    fi
+else
+    read -p "Enter your subscription renewal day (1-31, or skip): " renewal_day
+    if [[ "$renewal_day" =~ ^[0-9]+$ ]] && [ "$renewal_day" -ge 1 ] && [ "$renewal_day" -le 31 ]; then
+        echo "{\"renewal_day\": $renewal_day}" > "$SUB_FILE"
+        echo "[+] Renewal day set to $renewal_day"
+    else
+        echo "[=] Skipped subscription setup (set later with: bash subscription.sh)"
+    fi
+fi
+
 echo ""
 echo "Done! Restart Claude Code to see your pinned messages."
 echo ""
