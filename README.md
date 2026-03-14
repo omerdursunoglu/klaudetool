@@ -129,15 +129,27 @@ open ~/Applications/KlaudeTool.app
 
 ## Abonelik Yonetimi
 
-Abonelik yenilenme gununu ayarlamak, degistirmek veya kaldirmak icin:
+Durum cubugundaki geri sayim sayacini yonetmek icin `subscription.sh` kullanilir.
 
+**Ilk kurulumda:**
 ```bash
-bash subscription.sh set 16    # Yenilenme gununu 16 olarak ayarla
-bash subscription.sh status    # Mevcut durumu goster
-bash subscription.sh remove    # Abonelik takibini kaldir
+bash subscription.sh set 16    # Aboneliginiz her ayin 16'sinda yenileniyorsa
 ```
 
-Aboneligi durdurduktan sonra tekrar baslattinizda `bash subscription.sh set <gun>` ile yeni yenilenme gununuzu ayarlayabilirsiniz.
+**Aboneligi iptal ettigimde ne yapmaliyim?**
+```bash
+bash subscription.sh remove    # Geri sayim sayacini kaldirir
+```
+
+**Tekrar abone oldugumda ne yapmaliyim?**
+```bash
+bash subscription.sh set 5     # Yeni aboneliginiz her ayin 5'inde yenileniyorsa o gunu yazin
+```
+
+**Durumu kontrol etmek icin:**
+```bash
+bash subscription.sh status
+```
 
 ## Gereksinimler
 
