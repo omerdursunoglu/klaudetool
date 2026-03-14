@@ -1,6 +1,6 @@
 #!/bin/bash
-# lastmessage - Claude Code Pin Last Message Installer
-# Pins your last message above the status bar so you never lose track of what you asked.
+# klaudetool - CLI StatusLine + macOS Menu Bar App Installer
+# Pins your last message, tracks rate limits, shows usage graphs
 
 set -e
 
@@ -9,8 +9,8 @@ HOOKS_DIR="$CLAUDE_DIR/hooks"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "lastmessage - Claude Code Pin Last Message"
-echo "============================================"
+echo "klaudetool - Claude Code Toolkit"
+echo "================================="
 echo ""
 
 # Check if Claude Code is installed
@@ -23,9 +23,13 @@ fi
 mkdir -p "$HOOKS_DIR"
 
 # Copy hook script
-cp "$SCRIPT_DIR/hooks/pin-last-message.sh" "$HOOKS_DIR/pin-last-message.sh"
-chmod +x "$HOOKS_DIR/pin-last-message.sh"
-echo "[+] Hook installed: $HOOKS_DIR/pin-last-message.sh"
+cp "$SCRIPT_DIR/cli/hooks/pin-last-message.py" "$HOOKS_DIR/pin-last-message.py"
+chmod +x "$HOOKS_DIR/pin-last-message.py"
+echo "[+] Hook installed: $HOOKS_DIR/pin-last-message.py"
+
+# Copy ratelimit proxy
+cp "$SCRIPT_DIR/cli/ratelimit-proxy.py" "$HOOKS_DIR/ratelimit-proxy.py"
+echo "[+] Proxy installed: $HOOKS_DIR/ratelimit-proxy.py"
 
 # Add UserPromptSubmit hook to settings.json
 if [ -f "$SETTINGS_FILE" ]; then
@@ -46,7 +50,7 @@ if 'hooks' not in settings:
 settings['hooks']['UserPromptSubmit'] = [{
     'hooks': [{
         'type': 'command',
-        'command': 'python3 ~/.claude/hooks/pin-last-message.sh',
+        'command': 'python3 ~/.claude/hooks/pin-last-message.py',
         'timeout': 3
     }]
 }]
@@ -66,7 +70,7 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/hooks/pin-last-message.sh",
+            "command": "python3 ~/.claude/hooks/pin-last-message.py",
             "timeout": 3
           }
         ]
@@ -102,14 +106,14 @@ if [ -f "$CLAUDE_DIR/statusline.sh" ]; then
                 echo ""
                 echo "Add this block to your statusline.sh, right before your final print():"
                 echo ""
-                cat "$SCRIPT_DIR/statusline-patch.py"
+                cat "$SCRIPT_DIR/cli/statusline-patch.py"
                 echo ""
-                echo "See statusline-patch.py for the full patch code."
+                echo "See cli/statusline-patch.py for the full patch code."
             fi
             ;;
         2)
             cp "$CLAUDE_DIR/statusline.sh" "$CLAUDE_DIR/statusline.sh.bak"
-            cp "$SCRIPT_DIR/statusline.sh" "$CLAUDE_DIR/statusline.sh"
+            cp "$SCRIPT_DIR/cli/statusline.sh" "$CLAUDE_DIR/statusline.sh"
             chmod +x "$CLAUDE_DIR/statusline.sh"
             echo "[+] Statusline replaced (backup: statusline.sh.bak)"
             ;;
@@ -121,7 +125,7 @@ if [ -f "$CLAUDE_DIR/statusline.sh" ]; then
             ;;
     esac
 else
-    cp "$SCRIPT_DIR/statusline.sh" "$CLAUDE_DIR/statusline.sh"
+    cp "$SCRIPT_DIR/cli/statusline.sh" "$CLAUDE_DIR/statusline.sh"
     chmod +x "$CLAUDE_DIR/statusline.sh"
 
     # Add statusLine config if not present
@@ -142,6 +146,38 @@ with open('$SETTINGS_FILE', 'w') as f:
     json.dump(settings, f, indent=2)
 "
     echo "[+] Statusline installed: $CLAUDE_DIR/statusline.sh"
+fi
+
+# macOS Menu Bar App
+echo ""
+echo "Menu Bar App Setup (macOS only)"
+echo "-------------------------------"
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    echo "KlaudeTool menu bar app shows rate limit graphs and plays notification sounds."
+    echo ""
+    read -p "Build and install KlaudeTool.app? [y/N]: " build_app
+
+    if [[ "$build_app" =~ ^[Yy]$ ]]; then
+        echo "[*] Building KlaudeTool.app..."
+        cd "$SCRIPT_DIR/app"
+        make bundle
+        APP_DEST="$HOME/Applications"
+        mkdir -p "$APP_DEST"
+        rm -rf "$APP_DEST/KlaudeTool.app"
+        cp -R KlaudeTool.app "$APP_DEST/KlaudeTool.app"
+        echo "[+] KlaudeTool.app installed to $APP_DEST/"
+        echo ""
+        read -p "Launch KlaudeTool now? [y/N]: " launch_app
+        if [[ "$launch_app" =~ ^[Yy]$ ]]; then
+            open "$APP_DEST/KlaudeTool.app"
+        fi
+        cd "$SCRIPT_DIR"
+    else
+        echo "[=] Skipped menu bar app"
+    fi
+else
+    echo "[=] Skipped (macOS only)"
 fi
 
 echo ""

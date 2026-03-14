@@ -13,7 +13,7 @@ If you don't have a statusline.sh, use the full statusline.sh from this repo ins
 # Place it right before your final print() statement
 
 # === PIN LAST MESSAGE - START ===
-import re
+# Requires: os, HOME (already defined in statusline.sh)
 
 # Read last prompt (session-specific)
 ppid = os.getppid()

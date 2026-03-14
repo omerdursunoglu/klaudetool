@@ -1,148 +1,130 @@
-# lastmessage
+# klaudetool
 
-Claude Code'da son mesajinizi durum cubuguna sabitleyin, kota ve hiz limitlerini canli takip edin.
+Claude Code icin CLI statusline ve macOS menu bar uygulamasi. Son mesaj sabitleme, kota/hiz limiti takibi, kullanim grafikleri ve bildirim sesleri.
 
+## Bilesenler
 
-## Ozellikler
+### 1. CLI StatusLine (`cli/`)
 
-### 1. Son mesaj sabitleme
+Terminal icinde Claude Code durum cubuguna eklenen gelismis istatistik satiri.
 
-Claude Code'da mesaj gonderdiginizde, yanitlar akarken ne sordugunuzu unutmaniz cok kolay. Bu ozellik son mesajinizi durum cubugunun ustunde turuncu renkte sabitler.
+**Ozellikler:**
 
-**Nasil calisir:**
-
-- `UserPromptSubmit` hook'u Enter'a bastiginiz anda devreye girer
-- Mesajinizi oturuma ozel bir dosyaya yazar (`~/.claude/last-prompt-{pid}.txt`)
-- Her terminal oturumu kendi PID'ine gore ayri dosya kullanir, boylece 8 terminal acarsaniz her birinde o terminale yazdiginiz son mesaj gorunur
-- StatusLine bu dosyayi okuyup istatistik satirinin ustunde gosterir
-- Mesaj terminal genisligine sigmiyorsa otomatik olarak kirpilir ve sonuna `...` eklenir
+- **Son mesaj sabitleme**: Gonderdiginiz son mesaj turuncu renkte durum cubugunun ustunde sabitlenir
+- **Model bilgisi**: Kullanilan Claude modeli (Opus 4.6, Sonnet vb.)
+- **Context window**: Doluluk orani renkli gosterge
+- **5 saatlik hiz limiti**: Kullanim yuzdesi + sifirlanma suresi
+- **7 gunluk hiz limiti**: Kullanim yuzdesi + sifirlanma suresi
+- **Token sayaci**: Kullanilan / toplam context window
+- **Oturum maliyeti**: Guncel oturum + toplam donem maliyeti
+- **Abonelik suresi**: Yenilenmeye kalan gun
 
 ```
-readme'yi de bu iki özelliğini detaylıca anlatarak güncelle   <- turuncu, sabitlenmis mesaj
+readme'yi guncelle                                                <- turuncu, sabitlenmis mesaj
 Opus 4.6 | 11% | 5h 14% 1h21m | 7d 17% 5d12h | 2k/200k | $0.21 | 8d
 ```
-
-### 2. Gelismis istatistik cubugu
-
-StatusLine, Claude Code oturumunuza ait tum kritik bilgileri tek satirda gosterir:
-
-| Bilgi | Ornek | Aciklama |
-|-------|-------|----------|
-| Model | `Opus 4.6` | Kullanilan Claude modeli |
-| Context | `11%` | Context window doluluk orani |
-| 5 saatlik limit | `5h 14% 1h21m` | 5 saatlik hiz limiti kullanimi ve sifirlama suresi |
-| 7 gunluk limit | `7d 17% 5d12h` | 7 gunluk hiz limiti kullanimi ve sifirlama suresi |
-| Token | `2k/200k` | Kullanilan / toplam context window boyutu |
-| Maliyet | `$0.21` | Bu oturumdaki toplam API maliyeti |
-| Abonelik | `8d` | Abonelik yenilenme tarihine kalan gun |
 
 **Renk kodlari:**
+- Yesil: <%50 kullanim
+- Sari: %50-80 kullanim
+- Kirmizi: >%80 kullanim
 
-Tum yuzde degerleri duruma gore renklendirilir:
-- **Yesil**: Dusuk kullanim (<%50) - rahat bolgede
-- **Sari**: Orta kullanim (%50-80) - dikkatli olun
-- **Kirmizi**: Yuksek kullanim (>%80) - limite yaklasiyorsunuz
+### 2. macOS Menu Bar App (`app/`)
 
-Abonelik yenilenme suresi icin:
-- **Yesil**: 10+ gun
-- **Sari**: 5-10 gun
-- **Turuncu**: 3-5 gun
-- **Kirmizi**: 3 gunden az
+Menu bar'da rate limit grafiklerini gosteren ve bildirim sesleri calan SwiftUI uygulamasi.
 
-**Hiz limiti takibi:**
+**Ozellikler:**
 
-- macOS Keychain'den OAuth token'i otomatik olarak okunur
-- Anthropic API'ye hafif bir istek atilarak rate limit header'lari alinir
-- Sonuclar `~/.claude/ratelimit_cache.json` dosyasinda onbellekelenir
-- Onbellek her 5 dakikada bir yenilenir, gereksiz API cagrisi yapilmaz
+- **Rate limit grafikleri**: 5 saatlik ve 7 gunluk kullanim gecmisini gorsel olarak gosterir
+- **Menu bar ikonu**: 5h/7d kullanim cubugu dogrudan menu bar'da gorunur
+- **Zaman araligi secimi**: 1h, 6h, 1d, 7d, 30d grafik gorunumleri
+- **Bildirim sesleri**: Claude soru sordugunda veya gorevi tamamladiginda ses calar
+- **Otomatik kabul tespiti**: Auto-accept edilen islemler icin ses calmaz
+- **Claude durumu**: Idle / Working / Waiting for Input durumunu gosterir
+- **Login'de baslatma**: SMAppService ile otomatik baslama destegi
 
-**Abonelik takibi:**
+## Paylasilan Veri
 
-- `~/.claude/subscription.json` dosyasindan yenilenme gunu okunur
-- Bir sonraki yenilenme tarihine kalan gun hesaplanir
-- Ay sonu tasmalarini (ornegin 31. gun) otomatik yonetir
-
-Istatistik cubugu terminal genisligi ne olursa olsun her zaman tam formatta gosterilir:
-
-```
-Opus 4.6 | 11% | 5h 14% 1h21m | 7d 17% 5d12h | 2k/200k | $0.21 | 8d
-```
-
-Sabitlenen mesaj ise terminal genisligine gore kirpilir.
-
+Her iki bilesen de `~/.claude/ratelimit_cache.json` dosyasini kullanir:
+- CLI statusline proxy ile API rate limit header'larini yakalar ve cache'e yazar
+- Menu bar app cache'i okuyarak grafikleri gunceller
 
 ## Kurulum
 
 ```bash
-git clone https://github.com/dijitalbaslangic/lastmessage.git
-cd lastmessage
+git clone https://github.com/omerdursunoglu/klaudetool.git
+cd klaudetool
 bash install.sh
 ```
+
+Installer su islemleri yapar:
+1. Hook dosyasini (`pin-last-message.py`) ve proxy'yi (`ratelimit-proxy.py`) `~/.claude/hooks/`'a kopyalar
+2. `settings.json`'a `UserPromptSubmit` hook'unu ekler
+3. StatusLine kurulumunu yapar (yeni kurulum veya mevcut statusline'a yama)
+4. (Opsiyonel) KlaudeTool.app'i derleyip `~/Applications/`'a kurar
 
 Ardindan Claude Code'u yeniden baslatin.
 
 ## Kaldirma
 
 ```bash
-cd lastmessage
+cd klaudetool
 bash uninstall.sh
 ```
 
-Bu komut sadece su islemleri yapar:
-- `~/.claude/hooks/pin-last-message.sh` dosyasini siler
-- `~/.claude/last-prompt-*.txt` gecici dosyalarini siler
-- `settings.json` icinden `UserPromptSubmit` hook'unu kaldirir
-- Statusline yedegi varsa geri yukler (`statusline.sh.bak`)
+Kaldirilan dosyalar:
+- `~/.claude/hooks/pin-last-message.py`
+- `~/.claude/hooks/ratelimit-proxy.py`
+- `~/.claude/last-prompt-*.txt`
+- `~/.claude/ratelimit_cache.json`, `proxy_debug.json`, `total_cost.json`, `klaudetool_history.json`
+- `settings.json` icinden `UserPromptSubmit` hook'u
+- Statusline yedegi varsa geri yuklenir
+- (Opsiyonel) `~/Applications/KlaudeTool.app`
 
-## Manuel kurulum
+## Manuel Kurulum
 
-Kendiniz kurmak isterseniz:
-
-### 1. Hook'u kopyalayin
+### CLI
 
 ```bash
 mkdir -p ~/.claude/hooks
-cp hooks/pin-last-message.sh ~/.claude/hooks/
-chmod +x ~/.claude/hooks/pin-last-message.sh
+cp cli/hooks/pin-last-message.py ~/.claude/hooks/
+cp cli/ratelimit-proxy.py ~/.claude/hooks/
+cp cli/statusline.sh ~/.claude/statusline.sh
+chmod +x ~/.claude/hooks/pin-last-message.py ~/.claude/statusline.sh
 ```
 
-### 2. Hook'u ayarlara ekleyin
-
-`~/.claude/settings.json` icindeki `"hooks"` objesine ekleyin:
+`~/.claude/settings.json` icine ekleyin:
 
 ```json
-"UserPromptSubmit": [
-  {
-    "hooks": [
+{
+  "hooks": {
+    "UserPromptSubmit": [
       {
-        "type": "command",
-        "command": "python3 ~/.claude/hooks/pin-last-message.sh",
-        "timeout": 3
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/hooks/pin-last-message.py",
+            "timeout": 3
+          }
+        ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
   }
-]
+}
 ```
 
-### 3. StatusLine (istege bagli)
-
-Zaten bir statusline'iniz varsa, `statusline-patch.py` icindeki kodu son `print()` satirindan once ekleyin.
-
-Statusline'iniz yoksa, hazir olani kopyalayin:
+### Menu Bar App
 
 ```bash
-cp statusline.sh ~/.claude/statusline.sh
-chmod +x ~/.claude/statusline.sh
-```
-
-Ve `~/.claude/settings.json` dosyasina ekleyin:
-
-```json
-"statusLine": {
-  "type": "command",
-  "command": "~/.claude/statusline.sh",
-  "padding": 0
-}
+cd app
+make bundle
+cp -R KlaudeTool.app ~/Applications/
+open ~/Applications/KlaudeTool.app
 ```
 
 ## Gereksinimler
@@ -150,6 +132,7 @@ Ve `~/.claude/settings.json` dosyasina ekleyin:
 - Claude Code CLI
 - Python 3
 - macOS (hiz limiti takibi icin Keychain gerekli; pin ozelligi tum isletim sistemlerinde calisir)
+- Swift 5.10+ (menu bar app icin)
 
 ## Lisans
 
